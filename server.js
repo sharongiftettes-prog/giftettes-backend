@@ -12,8 +12,8 @@ app.get("/", (req, res) => {
 });
 
 // create Stripe Connect Express account for a fundraiser
-app.post("/create-fundraiser", async (req, res) => {
-  try {
+app.post("/api/fundraiser/create", async (req, res) => {
+
     const account = await stripe.accounts.create({
       type: "express",
       country: "GB", // change later if needed
