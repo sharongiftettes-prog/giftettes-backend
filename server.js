@@ -6,18 +6,20 @@ app.use(express.json());
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// quick test so we know the server is alive
+// Health check
 app.get("/", (req, res) => {
   res.send("Giftettes backend is running");
 });
 
-// create Stripe Connect Express account for a fundraiser
+// Create Stripe Connect Express account (UK ONLY)
 app.post("/api/fundraiser/create", async (req, res) => {
   try {
     const account = await stripe.accounts.create({
       type: "express",
       country: "GB",
-      capabilities: { transfers: { requested: true } }
+      capabilities: {
+        transfers: { requested: true }
+      }
     });
 
     const accountLink = await stripe.accountLinks.create({
@@ -27,9 +29,13 @@ app.post("/api/fundraiser/create", async (req, res) => {
       type: "account_onboarding"
     });
 
-    res.json({ onboardingUrl: accountLink.url });
+    res.json({
+      accountId: account.id,
+      onboardingUrl: accountLink.url
+    });
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    console.error("Stripe error:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -37,4 +43,3 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Backend running on port", PORT);
 });
-
