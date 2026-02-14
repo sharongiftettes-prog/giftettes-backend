@@ -13,13 +13,11 @@ app.get("/", (req, res) => {
 
 // create Stripe Connect Express account for a fundraiser
 app.post("/api/fundraiser/create", async (req, res) => {
-
+  try {
     const account = await stripe.accounts.create({
       type: "express",
-      country: "GB", // change later if needed
-      capabilities: {
-        transfers: { requested: true }
-      }
+      country: "GB",
+      capabilities: { transfers: { requested: true } }
     });
 
     const accountLink = await stripe.accountLinks.create({
@@ -39,3 +37,4 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Backend running on port", PORT);
 });
+
